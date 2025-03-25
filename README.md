@@ -31,11 +31,22 @@ This project implements a complete compiler pipeline for a subset of the C progr
 
 3. Install dependencies:
    ```bash
+   pip install --upgrade pip
    pip install -r requirements.txt
    
    ```
    
 4. Verify installation:
    ```bash
-   python3 compiler.py examples/simple.c
+   python3 compiler.py resources/file.c
    ```
+
+    Other scripts:
+
+    Run And Compile All Resources
+   ```bash
+   chmod +x scripts/compile_all.sh
+   ./scripts/compile_all.sh
+   ```
+
+

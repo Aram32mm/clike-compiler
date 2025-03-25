@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # Create output directory if it doesn't exist
-mkdir -p ./test_output
+mkdir -p ./output
 
 # Compile each example file
 echo "Compiling example input files..."
 
-for file in ./example_input/*.c; do
+for file in ./resources/*.c; do
     filename=$(basename "$file" .c)
-    output_file="./test_output/${filename}.cma"
+    output_file="./output/${filename}.cma"
     
     echo "Compiling $file to $output_file"
-    python3 compiler.py "$file" -o "$output_file"
+    python3 ./compiler.py "$file" -o "$output_file"
     
     # Check if compilation was successful
     if [ $? -eq 0 ]; then
