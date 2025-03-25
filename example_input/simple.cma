@@ -1,6 +1,0 @@
-ALLOC 1    // Allocate memory for 1 variables
-LOADC 5    // Push 5 onto the stack
-NEG       // Negate top value
-STOREA 0    // Store result into variable 'a'
-LOADA 0    // Load variable 'a' onto the stack
-RETURN    // Return the top of stack
