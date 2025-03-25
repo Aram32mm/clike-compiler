@@ -1,0 +1,5 @@
+LOADC 4    // Push 4 onto the stack
+LOADC 6    // Push 6 onto the stack
+MUL        // Multiply 4 by 6, result is 24
+LOADC 3    // Push 3 onto the stack
+ADD        // Add 3 and 24, result is 27

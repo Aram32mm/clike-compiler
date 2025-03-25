@@ -1,0 +1,14 @@
+LOADC 3    // Push 3 onto the stack
+LOADC 4    // Push 4 onto the stack
+MUL        // Multiply 3 by 4, result is 12
+LOADC 3    // Push 3 onto the stack
+LOADC 4    // Push 4 onto the stack
+LOADC 1    // Push 1 onto the stack
+ADD        // Add 4 and 1, result is 5
+NEG        // Negate 5, result is -5
+ADD        // Add 3 and -5, result is -2
+DIV        // Divide 12 by -2, result is -6
+LOADC 5    // Push 5 onto the stack
+LOADC 4    // Push 4 onto the stack
+ADD        // Add 5 and 4, result is 9
+MUL        // Multiply -6 by 9, result is -54

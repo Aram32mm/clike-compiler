@@ -1,0 +1,572 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> function
+Rule 2     function -> TYPE IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE
+Rule 3     statements -> statement
+Rule 4     statements -> statements statement
+Rule 5     statement -> variable_declaration
+Rule 6     statement -> assignment_statement
+Rule 7     statement -> return_statement
+Rule 8     variable_declaration -> TYPE IDENTIFIER SEMICOLON
+Rule 9     assignment_statement -> IDENTIFIER ASSIGN expression SEMICOLON
+Rule 10    return_statement -> RETURN expression SEMICOLON
+Rule 11    expression -> expression PLUS term
+Rule 12    expression -> expression MINUS term
+Rule 13    expression -> term
+Rule 14    term -> term MUL factor
+Rule 15    term -> term DIV factor
+Rule 16    term -> factor
+Rule 17    factor -> INTEGER
+Rule 18    factor -> IDENTIFIER
+Rule 19    factor -> LPAREN expression RPAREN
+Rule 20    factor -> MINUS factor
+
+Terminals, with rules where they appear
+
+ASSIGN               : 9
+DIV                  : 15
+IDENTIFIER           : 2 8 9 18
+INTEGER              : 17
+LBRACE               : 2
+LPAREN               : 2 19
+MINUS                : 12 20
+MUL                  : 14
+PLUS                 : 11
+RBRACE               : 2
+RETURN               : 10
+RPAREN               : 2 19
+SEMICOLON            : 8 9 10
+TYPE                 : 2 8
+error                : 
+
+Nonterminals, with rules where they appear
+
+assignment_statement : 6
+expression           : 9 10 11 12 19
+factor               : 14 15 16 20
+function             : 1
+program              : 0
+return_statement     : 7
+statement            : 3 4
+statements           : 2 4
+term                 : 11 12 13 14 15
+variable_declaration : 5
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . function
+    (2) function -> . TYPE IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE
+
+    TYPE            shift and go to state 3
+
+    program                        shift and go to state 1
+    function                       shift and go to state 2
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> function .
+
+    $end            reduce using rule 1 (program -> function .)
+
+
+state 3
+
+    (2) function -> TYPE . IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE
+
+    IDENTIFIER      shift and go to state 4
+
+
+state 4
+
+    (2) function -> TYPE IDENTIFIER . LPAREN RPAREN LBRACE statements RBRACE
+
+    LPAREN          shift and go to state 5
+
+
+state 5
+
+    (2) function -> TYPE IDENTIFIER LPAREN . RPAREN LBRACE statements RBRACE
+
+    RPAREN          shift and go to state 6
+
+
+state 6
+
+    (2) function -> TYPE IDENTIFIER LPAREN RPAREN . LBRACE statements RBRACE
+
+    LBRACE          shift and go to state 7
+
+
+state 7
+
+    (2) function -> TYPE IDENTIFIER LPAREN RPAREN LBRACE . statements RBRACE
+    (3) statements -> . statement
+    (4) statements -> . statements statement
+    (5) statement -> . variable_declaration
+    (6) statement -> . assignment_statement
+    (7) statement -> . return_statement
+    (8) variable_declaration -> . TYPE IDENTIFIER SEMICOLON
+    (9) assignment_statement -> . IDENTIFIER ASSIGN expression SEMICOLON
+    (10) return_statement -> . RETURN expression SEMICOLON
+
+    TYPE            shift and go to state 8
+    IDENTIFIER      shift and go to state 9
+    RETURN          shift and go to state 15
+
+    statements                     shift and go to state 10
+    statement                      shift and go to state 11
+    variable_declaration           shift and go to state 12
+    assignment_statement           shift and go to state 13
+    return_statement               shift and go to state 14
+
+state 8
+
+    (8) variable_declaration -> TYPE . IDENTIFIER SEMICOLON
+
+    IDENTIFIER      shift and go to state 16
+
+
+state 9
+
+    (9) assignment_statement -> IDENTIFIER . ASSIGN expression SEMICOLON
+
+    ASSIGN          shift and go to state 17
+
+
+state 10
+
+    (2) function -> TYPE IDENTIFIER LPAREN RPAREN LBRACE statements . RBRACE
+    (4) statements -> statements . statement
+    (5) statement -> . variable_declaration
+    (6) statement -> . assignment_statement
+    (7) statement -> . return_statement
+    (8) variable_declaration -> . TYPE IDENTIFIER SEMICOLON
+    (9) assignment_statement -> . IDENTIFIER ASSIGN expression SEMICOLON
+    (10) return_statement -> . RETURN expression SEMICOLON
+
+    RBRACE          shift and go to state 18
+    TYPE            shift and go to state 8
+    IDENTIFIER      shift and go to state 9
+    RETURN          shift and go to state 15
+
+    statement                      shift and go to state 19
+    variable_declaration           shift and go to state 12
+    assignment_statement           shift and go to state 13
+    return_statement               shift and go to state 14
+
+state 11
+
+    (3) statements -> statement .
+
+    RBRACE          reduce using rule 3 (statements -> statement .)
+    TYPE            reduce using rule 3 (statements -> statement .)
+    IDENTIFIER      reduce using rule 3 (statements -> statement .)
+    RETURN          reduce using rule 3 (statements -> statement .)
+
+
+state 12
+
+    (5) statement -> variable_declaration .
+
+    RBRACE          reduce using rule 5 (statement -> variable_declaration .)
+    TYPE            reduce using rule 5 (statement -> variable_declaration .)
+    IDENTIFIER      reduce using rule 5 (statement -> variable_declaration .)
+    RETURN          reduce using rule 5 (statement -> variable_declaration .)
+
+
+state 13
+
+    (6) statement -> assignment_statement .
+
+    RBRACE          reduce using rule 6 (statement -> assignment_statement .)
+    TYPE            reduce using rule 6 (statement -> assignment_statement .)
+    IDENTIFIER      reduce using rule 6 (statement -> assignment_statement .)
+    RETURN          reduce using rule 6 (statement -> assignment_statement .)
+
+
+state 14
+
+    (7) statement -> return_statement .
+
+    RBRACE          reduce using rule 7 (statement -> return_statement .)
+    TYPE            reduce using rule 7 (statement -> return_statement .)
+    IDENTIFIER      reduce using rule 7 (statement -> return_statement .)
+    RETURN          reduce using rule 7 (statement -> return_statement .)
+
+
+state 15
+
+    (10) return_statement -> RETURN . expression SEMICOLON
+    (11) expression -> . expression PLUS term
+    (12) expression -> . expression MINUS term
+    (13) expression -> . term
+    (14) term -> . term MUL factor
+    (15) term -> . term DIV factor
+    (16) term -> . factor
+    (17) factor -> . INTEGER
+    (18) factor -> . IDENTIFIER
+    (19) factor -> . LPAREN expression RPAREN
+    (20) factor -> . MINUS factor
+
+    INTEGER         shift and go to state 24
+    IDENTIFIER      shift and go to state 25
+    LPAREN          shift and go to state 26
+    MINUS           shift and go to state 22
+
+    expression                     shift and go to state 20
+    term                           shift and go to state 21
+    factor                         shift and go to state 23
+
+state 16
+
+    (8) variable_declaration -> TYPE IDENTIFIER . SEMICOLON
+
+    SEMICOLON       shift and go to state 27
+
+
+state 17
+
+    (9) assignment_statement -> IDENTIFIER ASSIGN . expression SEMICOLON
+    (11) expression -> . expression PLUS term
+    (12) expression -> . expression MINUS term
+    (13) expression -> . term
+    (14) term -> . term MUL factor
+    (15) term -> . term DIV factor
+    (16) term -> . factor
+    (17) factor -> . INTEGER
+    (18) factor -> . IDENTIFIER
+    (19) factor -> . LPAREN expression RPAREN
+    (20) factor -> . MINUS factor
+
+    INTEGER         shift and go to state 24
+    IDENTIFIER      shift and go to state 25
+    LPAREN          shift and go to state 26
+    MINUS           shift and go to state 22
+
+    expression                     shift and go to state 28
+    term                           shift and go to state 21
+    factor                         shift and go to state 23
+
+state 18
+
+    (2) function -> TYPE IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE .
+
+    $end            reduce using rule 2 (function -> TYPE IDENTIFIER LPAREN RPAREN LBRACE statements RBRACE .)
+
+
+state 19
+
+    (4) statements -> statements statement .
+
+    RBRACE          reduce using rule 4 (statements -> statements statement .)
+    TYPE            reduce using rule 4 (statements -> statements statement .)
+    IDENTIFIER      reduce using rule 4 (statements -> statements statement .)
+    RETURN          reduce using rule 4 (statements -> statements statement .)
+
+
+state 20
+
+    (10) return_statement -> RETURN expression . SEMICOLON
+    (11) expression -> expression . PLUS term
+    (12) expression -> expression . MINUS term
+
+    SEMICOLON       shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+
+
+state 21
+
+    (13) expression -> term .
+    (14) term -> term . MUL factor
+    (15) term -> term . DIV factor
+
+    SEMICOLON       reduce using rule 13 (expression -> term .)
+    PLUS            reduce using rule 13 (expression -> term .)
+    MINUS           reduce using rule 13 (expression -> term .)
+    RPAREN          reduce using rule 13 (expression -> term .)
+    MUL             shift and go to state 32
+    DIV             shift and go to state 33
+
+
+state 22
+
+    (20) factor -> MINUS . factor
+    (17) factor -> . INTEGER
+    (18) factor -> . IDENTIFIER
+    (19) factor -> . LPAREN expression RPAREN
+    (20) factor -> . MINUS factor
+
+    INTEGER         shift and go to state 24
+    IDENTIFIER      shift and go to state 25
+    LPAREN          shift and go to state 26
+    MINUS           shift and go to state 22
+
+    factor                         shift and go to state 34
+
+state 23
+
+    (16) term -> factor .
+
+    MUL             reduce using rule 16 (term -> factor .)
+    DIV             reduce using rule 16 (term -> factor .)
+    SEMICOLON       reduce using rule 16 (term -> factor .)
+    PLUS            reduce using rule 16 (term -> factor .)
+    MINUS           reduce using rule 16 (term -> factor .)
+    RPAREN          reduce using rule 16 (term -> factor .)
+
+
+state 24
+
+    (17) factor -> INTEGER .
+
+    MUL             reduce using rule 17 (factor -> INTEGER .)
+    DIV             reduce using rule 17 (factor -> INTEGER .)
+    SEMICOLON       reduce using rule 17 (factor -> INTEGER .)
+    PLUS            reduce using rule 17 (factor -> INTEGER .)
+    MINUS           reduce using rule 17 (factor -> INTEGER .)
+    RPAREN          reduce using rule 17 (factor -> INTEGER .)
+
+
+state 25
+
+    (18) factor -> IDENTIFIER .
+
+    MUL             reduce using rule 18 (factor -> IDENTIFIER .)
+    DIV             reduce using rule 18 (factor -> IDENTIFIER .)
+    SEMICOLON       reduce using rule 18 (factor -> IDENTIFIER .)
+    PLUS            reduce using rule 18 (factor -> IDENTIFIER .)
+    MINUS           reduce using rule 18 (factor -> IDENTIFIER .)
+    RPAREN          reduce using rule 18 (factor -> IDENTIFIER .)
+
+
+state 26
+
+    (19) factor -> LPAREN . expression RPAREN
+    (11) expression -> . expression PLUS term
+    (12) expression -> . expression MINUS term
+    (13) expression -> . term
+    (14) term -> . term MUL factor
+    (15) term -> . term DIV factor
+    (16) term -> . factor
+    (17) factor -> . INTEGER
+    (18) factor -> . IDENTIFIER
+    (19) factor -> . LPAREN expression RPAREN
+    (20) factor -> . MINUS factor
+
+    INTEGER         shift and go to state 24
+    IDENTIFIER      shift and go to state 25
+    LPAREN          shift and go to state 26
+    MINUS           shift and go to state 22
+
+    expression                     shift and go to state 35
+    term                           shift and go to state 21
+    factor                         shift and go to state 23
+
+state 27
+
+    (8) variable_declaration -> TYPE IDENTIFIER SEMICOLON .
+
+    RBRACE          reduce using rule 8 (variable_declaration -> TYPE IDENTIFIER SEMICOLON .)
+    TYPE            reduce using rule 8 (variable_declaration -> TYPE IDENTIFIER SEMICOLON .)
+    IDENTIFIER      reduce using rule 8 (variable_declaration -> TYPE IDENTIFIER SEMICOLON .)
+    RETURN          reduce using rule 8 (variable_declaration -> TYPE IDENTIFIER SEMICOLON .)
+
+
+state 28
+
+    (9) assignment_statement -> IDENTIFIER ASSIGN expression . SEMICOLON
+    (11) expression -> expression . PLUS term
+    (12) expression -> expression . MINUS term
+
+    SEMICOLON       shift and go to state 36
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+
+
+state 29
+
+    (10) return_statement -> RETURN expression SEMICOLON .
+
+    RBRACE          reduce using rule 10 (return_statement -> RETURN expression SEMICOLON .)
+    TYPE            reduce using rule 10 (return_statement -> RETURN expression SEMICOLON .)
+    IDENTIFIER      reduce using rule 10 (return_statement -> RETURN expression SEMICOLON .)
+    RETURN          reduce using rule 10 (return_statement -> RETURN expression SEMICOLON .)
+
+
+state 30
+
+    (11) expression -> expression PLUS . term
+    (14) term -> . term MUL factor
+    (15) term -> . term DIV factor
+    (16) term -> . factor
+    (17) factor -> . INTEGER
+    (18) factor -> . IDENTIFIER
+    (19) factor -> . LPAREN expression RPAREN
+    (20) factor -> . MINUS factor
+
+    INTEGER         shift and go to state 24
+    IDENTIFIER      shift and go to state 25
+    LPAREN          shift and go to state 26
+    MINUS           shift and go to state 22
+
+    term                           shift and go to state 37
+    factor                         shift and go to state 23
+
+state 31
+
+    (12) expression -> expression MINUS . term
+    (14) term -> . term MUL factor
+    (15) term -> . term DIV factor
+    (16) term -> . factor
+    (17) factor -> . INTEGER
+    (18) factor -> . IDENTIFIER
+    (19) factor -> . LPAREN expression RPAREN
+    (20) factor -> . MINUS factor
+
+    INTEGER         shift and go to state 24
+    IDENTIFIER      shift and go to state 25
+    LPAREN          shift and go to state 26
+    MINUS           shift and go to state 22
+
+    term                           shift and go to state 38
+    factor                         shift and go to state 23
+
+state 32
+
+    (14) term -> term MUL . factor
+    (17) factor -> . INTEGER
+    (18) factor -> . IDENTIFIER
+    (19) factor -> . LPAREN expression RPAREN
+    (20) factor -> . MINUS factor
+
+    INTEGER         shift and go to state 24
+    IDENTIFIER      shift and go to state 25
+    LPAREN          shift and go to state 26
+    MINUS           shift and go to state 22
+
+    factor                         shift and go to state 39
+
+state 33
+
+    (15) term -> term DIV . factor
+    (17) factor -> . INTEGER
+    (18) factor -> . IDENTIFIER
+    (19) factor -> . LPAREN expression RPAREN
+    (20) factor -> . MINUS factor
+
+    INTEGER         shift and go to state 24
+    IDENTIFIER      shift and go to state 25
+    LPAREN          shift and go to state 26
+    MINUS           shift and go to state 22
+
+    factor                         shift and go to state 40
+
+state 34
+
+    (20) factor -> MINUS factor .
+
+    MUL             reduce using rule 20 (factor -> MINUS factor .)
+    DIV             reduce using rule 20 (factor -> MINUS factor .)
+    SEMICOLON       reduce using rule 20 (factor -> MINUS factor .)
+    PLUS            reduce using rule 20 (factor -> MINUS factor .)
+    MINUS           reduce using rule 20 (factor -> MINUS factor .)
+    RPAREN          reduce using rule 20 (factor -> MINUS factor .)
+
+
+state 35
+
+    (19) factor -> LPAREN expression . RPAREN
+    (11) expression -> expression . PLUS term
+    (12) expression -> expression . MINUS term
+
+    RPAREN          shift and go to state 41
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+
+
+state 36
+
+    (9) assignment_statement -> IDENTIFIER ASSIGN expression SEMICOLON .
+
+    RBRACE          reduce using rule 9 (assignment_statement -> IDENTIFIER ASSIGN expression SEMICOLON .)
+    TYPE            reduce using rule 9 (assignment_statement -> IDENTIFIER ASSIGN expression SEMICOLON .)
+    IDENTIFIER      reduce using rule 9 (assignment_statement -> IDENTIFIER ASSIGN expression SEMICOLON .)
+    RETURN          reduce using rule 9 (assignment_statement -> IDENTIFIER ASSIGN expression SEMICOLON .)
+
+
+state 37
+
+    (11) expression -> expression PLUS term .
+    (14) term -> term . MUL factor
+    (15) term -> term . DIV factor
+
+    SEMICOLON       reduce using rule 11 (expression -> expression PLUS term .)
+    PLUS            reduce using rule 11 (expression -> expression PLUS term .)
+    MINUS           reduce using rule 11 (expression -> expression PLUS term .)
+    RPAREN          reduce using rule 11 (expression -> expression PLUS term .)
+    MUL             shift and go to state 32
+    DIV             shift and go to state 33
+
+
+state 38
+
+    (12) expression -> expression MINUS term .
+    (14) term -> term . MUL factor
+    (15) term -> term . DIV factor
+
+    SEMICOLON       reduce using rule 12 (expression -> expression MINUS term .)
+    PLUS            reduce using rule 12 (expression -> expression MINUS term .)
+    MINUS           reduce using rule 12 (expression -> expression MINUS term .)
+    RPAREN          reduce using rule 12 (expression -> expression MINUS term .)
+    MUL             shift and go to state 32
+    DIV             shift and go to state 33
+
+
+state 39
+
+    (14) term -> term MUL factor .
+
+    MUL             reduce using rule 14 (term -> term MUL factor .)
+    DIV             reduce using rule 14 (term -> term MUL factor .)
+    SEMICOLON       reduce using rule 14 (term -> term MUL factor .)
+    PLUS            reduce using rule 14 (term -> term MUL factor .)
+    MINUS           reduce using rule 14 (term -> term MUL factor .)
+    RPAREN          reduce using rule 14 (term -> term MUL factor .)
+
+
+state 40
+
+    (15) term -> term DIV factor .
+
+    MUL             reduce using rule 15 (term -> term DIV factor .)
+    DIV             reduce using rule 15 (term -> term DIV factor .)
+    SEMICOLON       reduce using rule 15 (term -> term DIV factor .)
+    PLUS            reduce using rule 15 (term -> term DIV factor .)
+    MINUS           reduce using rule 15 (term -> term DIV factor .)
+    RPAREN          reduce using rule 15 (term -> term DIV factor .)
+
+
+state 41
+
+    (19) factor -> LPAREN expression RPAREN .
+
+    MUL             reduce using rule 19 (factor -> LPAREN expression RPAREN .)
+    DIV             reduce using rule 19 (factor -> LPAREN expression RPAREN .)
+    SEMICOLON       reduce using rule 19 (factor -> LPAREN expression RPAREN .)
+    PLUS            reduce using rule 19 (factor -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 19 (factor -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 19 (factor -> LPAREN expression RPAREN .)
+

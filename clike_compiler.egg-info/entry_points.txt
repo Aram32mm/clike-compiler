@@ -1,0 +1,2 @@
+[console_scripts]
+clike-compiler = compiler:main

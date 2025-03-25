@@ -1,0 +1,27 @@
+ALLOC 5    // Allocate memory for 5 variables
+LOADC 15    // Push 15 onto the stack
+STOREA 0    // Store result into variable 'a'
+LOADC 7    // Push 7 onto the stack
+STOREA 1    // Store result into variable 'b'
+LOADC 3    // Push 3 onto the stack
+STOREA 2    // Store result into variable 'c'
+LOADC 2    // Push 2 onto the stack
+STOREA 3    // Store result into variable 'd'
+LOADA 0    // Load variable 'a' onto the stack
+LOADA 1    // Load variable 'b' onto the stack
+MUL       // Multiply top two values
+LOADA 2    // Load variable 'c' onto the stack
+LOADA 3    // Load variable 'd' onto the stack
+DIV       // Divide top two values
+SUB       // Subtract top two values
+LOADA 0    // Load variable 'a' onto the stack
+ADD       // Add top two values
+LOADA 1    // Load variable 'b' onto the stack
+LOADA 2    // Load variable 'c' onto the stack
+MUL       // Multiply top two values
+SUB       // Subtract top two values
+LOADA 3    // Load variable 'd' onto the stack
+ADD       // Add top two values
+STOREA 4    // Store result into variable 'result'
+LOADA 4    // Load variable 'result' onto the stack
+RETURN    // Return the top of stack

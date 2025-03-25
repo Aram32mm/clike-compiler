@@ -1,0 +1,7 @@
+LOADC 4    // Push 4 onto the stack
+LOADC 6    // Push 6 onto the stack
+ADD        // Add 4 and 6, result is 10
+LOADC 8    // Push 8 onto the stack
+LOADC 2    // Push 2 onto the stack
+SUB        // Subtract 2 from 8, result is 6
+ADD        // Add 10 and 6, result is 16
