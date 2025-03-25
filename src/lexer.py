@@ -53,7 +53,12 @@ class CLexer:
     def t_newline(self, t):
         r'\n+'
         t.lexer.lineno += len(t.value)
-
+    
+    # Skip comments
+    def t_COMMENT(self, t):
+        r'//.*'
+        pass  # No return value. Token discarded
+        
     # A string containing ignored characters (spaces and tabs)
     t_ignore = ' \t'
 

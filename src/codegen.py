@@ -29,17 +29,17 @@ class CodeGenerator:
         _, func_name, statements = node
 
         # Count variables to allocate memory
-        var_count = sum(1 for stmt in statements if stmt[0] == 'VAR_DECL')
+        var_count = sum(1 for stmt in statements if stmt[0] == 'VAR_DECL' or stmt[0] == 'VAR_DECL_INIT')
         self.code.append(f"ALLOC {var_count}    // Allocate memory for {var_count} variables")
 
         # First process all variable declarations to allocate memory
         for stmt in statements:
-            if stmt[0] == 'VAR_DECL':
+            if stmt[0] == 'VAR_DECL' or stmt[0] == 'VAR_DECL_INIT':
                 self.visit(stmt)
 
         # Then process all other statements
         for stmt in statements:
-            if stmt[0] != 'VAR_DECL':
+            if stmt[0] != 'VAR_DECL' and stmt[0] != 'VAR_DECL_INIT':
                 self.visit(stmt)
 
         return self.code
@@ -50,6 +50,20 @@ class CodeGenerator:
         self.variables[var_name] = self.next_var_pos
         self.next_var_pos += 1
         # No code emitted for declaration
+        
+    def visit_VAR_DECL_INIT(self, node):
+        """Generate code for a variable declaration with initialization"""
+        _, var_type, var_name, init_expr = node
+        # Store variable position
+        self.variables[var_name] = self.next_var_pos
+        var_pos = self.next_var_pos
+        self.next_var_pos += 1
+        
+        # Evaluate initialization expression
+        self.visit(init_expr)
+        
+        # Store result in variable
+        self.code.append(f"STOREA {var_pos}    // Initialize variable '{var_name}'")
 
     def visit_ASSIGN(self, node):
         """Generate code for an assignment statement"""

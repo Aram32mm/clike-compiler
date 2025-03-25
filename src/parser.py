@@ -43,8 +43,14 @@ class CParser:
         p[0] = p[1]
     
     def p_variable_declaration(self, p):
-        'variable_declaration : TYPE IDENTIFIER SEMICOLON'
-        p[0] = ('VAR_DECL', p[1], p[2])
+        '''variable_declaration : TYPE IDENTIFIER SEMICOLON
+                               | TYPE IDENTIFIER ASSIGN expression SEMICOLON'''
+        if len(p) == 4:
+            # Simple declaration: int x;
+            p[0] = ('VAR_DECL', p[1], p[2])
+        else:
+            # Declaration with initialization: int x = 10;
+            p[0] = ('VAR_DECL_INIT', p[1], p[2], p[4])
     
     def p_assignment_statement(self, p):
         'assignment_statement : IDENTIFIER ASSIGN expression SEMICOLON'
