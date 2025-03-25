@@ -19,7 +19,7 @@ This project implements a complete compiler pipeline for a subset of the C progr
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Aram32mm/c_to_vam_compiler
+   git clone https://github.com/Aram32mm/clike-compiler.git
    cd c_to_vam_compiler
    ```
 
