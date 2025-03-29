@@ -11,6 +11,7 @@ arrays, and struct access.
 
 import ply.lex as lex
 
+
 class CLexer:
     # === List of Token Names ===
     tokens = (
@@ -123,6 +124,7 @@ class CLexer:
     def tokenize(self, data):
         """
         Tokenizes the given input string and returns a list of (TYPE, value) tuples.
+
         Example:
             [('TYPE', 'int'), ('IDENTIFIER', 'x'), ('ASSIGN', '='), ('INTEGER', 5), ('SEMICOLON', ';')]
         """
