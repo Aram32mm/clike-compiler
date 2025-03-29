@@ -20,33 +20,28 @@ This project implements a complete compiler pipeline for a subset of the C progr
 1. Clone the repository:
    ```bash
    git clone https://github.com/Aram32mm/clike-compiler.git
-   cd c_to_vam_compiler
+   cd clike-compiler
    ```
 
 2. Create and activate a virtual environment:
    ```bash
    python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-3. Install dependencies:
-   ```bash
    pip install --upgrade pip
-   pip install -r requirements.txt
-   
+   pip install .
    ```
-   
-4. Verify installation:
+
+3. Run tests
    ```bash
-   python3 compiler.py resources/file.c
+   pytest tests     
    ```
 
-    Other scripts:
-
-    Run And Compile All Resources
+4. Run tests with logs 
    ```bash
-   chmod +x scripts/compile_all.sh
-   ./scripts/compile_all.sh
+   pytest tests/test_file.py -s      
    ```
 
-
+5. Use VAM to observe instruction flow
+   ```bash
+   java -jar vam/vam.jar   
+   ```
+   Once inside, VAM/Open Program.../Choose .cma file  
