@@ -8,8 +8,8 @@ This script compiles a simplified C-like language to CMA code.
 import sys
 import os
 import argparse
-import pprint
 from src.parser import CParser
+from src.semantics import SemanticAnalyzer
 from src.codegen import CodeGenerator
 
 def compile_file(input_file, output_file=None, verbose=False):
@@ -28,21 +28,18 @@ def compile_file(input_file, output_file=None, verbose=False):
         if output_file is None:
             output_file = os.path.splitext(input_file)[0] + '.cma'
         
-        # Parse the source code
+        # Lexical And Syntax Analysys
         parser = CParser(verbose=verbose)
         ast = parser.parse(source_code)
         
-        if ast is None:
-            print("❌ Parsing failed.")
-            if verbose:
-                print("Hint: Check your syntax or incomplete statements.")
-            return False
-        
-        if verbose:
-            print("\n✅ AST:")
-            pprint.pprint(ast)
-        
-        # Generate code
+        # Semantic Analysys 
+        analyzer = SemanticAnalyzer(verbose=verbose)
+        errors = analyzer.analyze(ast)
+        if errors:
+            raise Exception("Semantic errors:\n" + "\n".join(errors))
+
+
+        # Code Generation
         code_generator = CodeGenerator(verbose=verbose)
         cma_code = code_generator.generate(ast)
         
