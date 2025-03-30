@@ -110,8 +110,7 @@ class CLexer:
     t_ignore = ' \t'
 
     def t_error(self, t):
-        print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
-        t.lexer.skip(1)
+        raise SyntaxError(f"Illegal character '{t.value[0]}' at line {t.lineno}")
 
     def build(self, **kwargs):
         """
