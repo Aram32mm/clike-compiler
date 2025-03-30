@@ -34,6 +34,8 @@ from src.lexer import CLexer
 
 
 class CParser:
+    start = 'program'
+
     def __init__(self, verbose=False):
         self.verbose = verbose
         self.lexer = CLexer()
@@ -70,7 +72,7 @@ class CParser:
 
     def p_function(self, p):
         'function : TYPE IDENTIFIER LPAREN parameters RPAREN LBRACE statements RBRACE'
-        p[0] = ('FUNCTION', p[2], p[4], p[7])
+        p[0] = ('FUNCTION', p[2], p[1], p[4], p[7])
         if self.verbose:
             print(f"Reduced: function → {p[1]} {p[2]}({p[4]}) {{...}}")
 
@@ -99,8 +101,15 @@ class CParser:
 
     def p_statements(self, p):
         '''statements : statement
-                      | statements statement'''
-        p[0] = [p[1]] if len(p) == 2 else p[1] + [p[2]]
+                      | statements statement
+                      | empty'''
+        if len(p) == 2:
+            if p[1] is None:
+                p[0] = []
+            else:
+                p[0] = [p[1]]
+        else:
+            p[0] = p[1] + [p[2]]
         if self.verbose:
             print("Reduced: statements →", p[0])
 
@@ -129,19 +138,25 @@ class CParser:
             print("Reduced: block_statement →", p[0])
 
     def p_for_statement(self, p):
-        'for_statement : FOR LPAREN assignment_statement expression SEMICOLON assignment_statement RPAREN statement'
-        p[0] = ('FOR', p[3], p[4], p[6], p[8])
+        'for_statement : FOR LPAREN optional_expression SEMICOLON optional_expression SEMICOLON optional_expression RPAREN statement'
+        p[0] = ('FOR', p[3], p[5], p[7], p[9])
         if self.verbose:
             print("Reduced: for_statement →", p[0])
 
     def p_variable_declaration(self, p):
         '''variable_declaration : TYPE IDENTIFIER SEMICOLON
+                                 | TYPE MUL IDENTIFIER SEMICOLON
                                  | TYPE IDENTIFIER ASSIGN expression SEMICOLON
+                                 | TYPE MUL IDENTIFIER ASSIGN expression SEMICOLON
                                  | TYPE IDENTIFIER LBRACKET INTEGER RBRACKET SEMICOLON'''
         if len(p) == 4:
             p[0] = ('VAR_DECL', p[1], p[2])
+        elif len(p) == 5 and p.slice[2].type == 'MUL':
+            p[0] = ('VAR_DECL', p[1] + '*', p[3]) 
         elif len(p) == 6:
             p[0] = ('VAR_DECL_INIT', p[1], p[2], p[4])
+        elif len(p) == 7 and p.slice[2].type == 'MUL':
+            p[0] = ('VAR_DECL_INIT', p[1] + '*', p[3], p[5])
         elif len(p) == 7:
             p[0] = ('ARRAY_DECL', p[1], p[2], p[4])
         if self.verbose:
@@ -152,6 +167,10 @@ class CParser:
         p[0] = ('ASSIGN', p[1], p[3])
         if self.verbose:
             print("Reduced: assignment_statement →", p[0])
+    
+    def p_array_assignment_statement(self, p):
+        'assignment_statement : IDENTIFIER LBRACKET expression RBRACKET ASSIGN expression SEMICOLON'
+        p[0] = ('ARRAY_ASSIGN', p[1], p[3], p[6])
 
     def p_return_statement(self, p):
         'return_statement : RETURN expression SEMICOLON'
@@ -220,6 +239,8 @@ class CParser:
                       | expression GE expression
                       | expression AND expression
                       | expression OR expression
+                      | IDENTIFIER ASSIGN expression
+                      | IDENTIFIER LBRACKET expression RBRACKET
                       | IDENTIFIER LPAREN argument_list RPAREN
                       | LPAREN expression RPAREN
                       | MINUS expression %prec UMINUS
@@ -244,6 +265,8 @@ class CParser:
             p[0] = ('UNARYOP', '-', p[2])
         elif len(p) == 4 and p[1] == '(':
             p[0] = p[2]
+        elif len(p) == 4 and p.slice[2].type == 'ASSIGN':
+            p[0] = ('ASSIGN', p[1], p[3])
         elif len(p) == 5 and p.slice[2].type == 'LPAREN':
             p[0] = ('CALL', p[1], p[3])
         elif len(p) == 5 and p.slice[2].type == 'LBRACKET':
@@ -252,9 +275,17 @@ class CParser:
             p[0] = ('BINOP', p[2], p[1], p[3])
         if self.verbose:
             print("Reduced: expression →", p[0])
+    
+    def p_optional_expression(self, p):
+        '''optional_expression : expression
+                               | empty'''
+        p[0] = p[1] if p[1] is not None else ('EMPTY',)
 
     def p_error(self, p):
         if p:
             print(f"❌ Syntax error at token '{p.type}' (value: '{p.value}') at line {p.lineno}, column {p.lexpos}")
+            raise SyntaxError(f"Syntax error at token '{p.type}' (value: '{p.value}') at line {p.lineno}, column {p.lexpos}")
+
         else:
             print("❌ Syntax error at EOF")
+            raise SyntaxError("Syntax error at EOF")
