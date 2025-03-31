@@ -31,17 +31,22 @@ def compile_file(input_file, output_file=None, verbose=False):
         # Lexical And Syntax Analysys
         parser = CParser(verbose=verbose)
         ast = parser.parse(source_code)
-        
+        if verbose:
+            print(f"\n✅ Parsing successful.")
+
         # Semantic Analysys 
         analyzer = SemanticAnalyzer(verbose=verbose)
         errors = analyzer.analyze(ast)
         if errors:
             raise Exception("Semantic errors:\n" + "\n".join(errors))
-
+        if verbose:
+            print(f"\n✅ Semantic Analysis successful.")
 
         # Code Generation
         code_generator = CodeGenerator(verbose=verbose)
         cma_code = code_generator.generate(ast)
+        if verbose:
+            print(f"\n✅ Code Generation successful.")
         
         if verbose:
             print("\n⚙️ CMA Code:")
