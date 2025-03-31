@@ -1,26 +1,43 @@
-"""
-TODO: Weram
-Do the methods to read and parse an output file like 
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+from tests.utils.cma_instruction import CMaInstruction
 
-LOADC 3    // Push 3 onto the stack
-LOADC 4    // Push 4 onto the stack
-ADD        // Add 3 and 4, result is 7
-LOADC 4    // Push 4 onto the stack
-NEG        // Negate 4, result is -4
-DIV        // Divide 7 by -4, result is -1.75
-
-and make a list of CMaInstruction objects to initalize the CMaInstructionProcessor
-(Classes are in cma_instruction.py)
-"""
 class CMaProgramParser:
     def __init__(self):
         pass
 
     def parse_lines(self, lines):
-        return
+        instructions = []
+        for line in lines:
+            line.strip()
+            if not line or line.startswith("//"):  # Skip empty lines and comments
+                continue
+            if "//" in line:
+                line = line.split("//", 1)[0].strip()
+            if line.endswith(":"):
+                instructions.append(CMaInstruction("label", line[:-1]))
+                continue
+            parts = line.split()
+            opcode = parts[0]
+            # Leave operand as string if it's not a number
+            if len(parts) > 1:
+                operand_str = parts[1]
+                try:
+                    operand = int(operand_str)
+                except ValueError:
+                    operand = operand_str
+            else:
+                operand = None
+            
+            instructions.append(CMaInstruction(opcode, operand))
+        return instructions
 
     def parse_file(self, filepath):
-       return
+        with open(filepath, "r") as f:
+            lines = f.readlines()
+        return self.parse_lines(lines)
 
     def parse_string(self, program_string):
-       return
+        lines = program_string.strip().split("\n")
+        return self.parse_lines(lines)
