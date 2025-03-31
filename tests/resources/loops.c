@@ -39,8 +39,8 @@ int main() {
         if (i == 2) {
             continue;
         }
-        result = result + 100;
+        result = result + 3;
     }
     
-    return result;  // If all loops work correctly
+    return result;  // 130
 }

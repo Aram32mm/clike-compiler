@@ -41,5 +41,5 @@ int main() {
         result = result + 64;
     }
     
-    return result;  // Should return 127 if all conditions work correctly
+    return result;  // 127
 }

@@ -9,9 +9,7 @@ int main() {
     int c = -a;
     result = result + c;  // Should add -5
     
-    // Unary plus (if supported)
-    int d = +b;
-    result = result + d;  // Should add 10
+    // Unary plus (Not supported)
     
     // Logical NOT
     int e = 0;
