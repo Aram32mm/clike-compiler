@@ -47,7 +47,7 @@ class CodeGenerator:
         self.variables = {}
         self.next_var_pos = 0
 
-        self.code.append(f"{name}:")
+        # self.code.append(f"{name}:")
 
         # Regular functions (with ENTER and RETURN)
         total_stack_space = len(params)
@@ -304,7 +304,7 @@ class CodeGenerator:
             raise Exception(f"Undefined variable: {name}")
         
         entry = self.variables[name]
-        
+
         if isinstance(entry, dict):
             if entry.get("kind") == "array":
                 raise Exception(f"Cannot use array variable '{name}' as scalar")
