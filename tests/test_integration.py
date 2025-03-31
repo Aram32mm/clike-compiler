@@ -1,36 +1,66 @@
 # tests/integration.py
 
-from tests.utils.cma_parser import CMaProgramParser
-from tests.utils.cma_instruction import CMaInstructionProcessor
+import os
+import sys
+import pytest
 
-def test_integration():
-    """
-    TODO: Weram
-    The idea is to compile all c files in resources (our test cases) 
-    with both our compiler and a c compiler 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-    out compiler produces the cma instructions, so once you have those instructions, 
-    use the parser and the processor to get the result
+from tests.utils.runner import compare_results
+from compiler import compile_file
 
-    at the end you shpuld compare the result given by our compiler and the processor
-    with the result given by a compilation of the c code with gcc or something similar
-    look how to automatize that process
+resource_dir = "./tests/resources"
+
+test_files = [
+    os.path.join(resource_dir, f)
+    for f in os.listdir(resource_dir)
+    if f.endswith(".c")
+]
+
+@pytest.mark.parametrize("c_file_path", test_files)
+def test_integration(c_file_path):
+    print(f"\n🧪 Testing: {c_file_path}")
+    cma_path = c_file_path.replace(".c", ".cma")
+
+    # Step 1: Compile C-like to CMA
+    success = compile_file(c_file_path, verbose=True)
+    assert success, f"❌ Compilation to CMA failed for {c_file_path}"
+
+    # Step 2: Compare native C vs CMA
+    match = compare_results(c_file_path, cma_path, verbose=True)   
     
+    # Step 3: Enforce correctness
+    assert match, f"❌ Test failed: {c_file_path} (C != CMA)"
+    
+    # Cleanup only if test passed
+    if os.path.exists(cma_path):
+        os.remove(cma_path)
 
-    """
-    raw_program = """
-    LOADC 3    // Push 3 onto the stack
-    LOADC 4    // Push 4 onto the stack
-    ADD        // Add 3 and 4, result is 7
-    LOADC 4    // Push 4 onto the stack
-    NEG        // Negate 4, result is -4
-    DIV        // Divide 7 by -4, result is -1.75
-    """
+# === Allow single-file execution ===
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python tests/integration.py <source.c>")
+        sys.exit(1)
 
-    #parser = CMaProgramParser()
-    #instructions = parser.parse_string(raw_program)
+    c_file_path = sys.argv[1]
+    if not os.path.isfile(c_file_path):
+        print(f"❌ File not found: {c_file_path}")
+        sys.exit(1)
 
-    #vm = CMaInstructionProcessor(verbose=True)
-    #vm.load_instructions(instructions)
-    #vm.run()
-    assert 1 == 1
+    print(f"\n🧪 Debug Testing: {c_file_path}")
+    cma_path = c_file_path.replace(".c", ".cma")
+
+    success = compile_file(c_file_path, verbose=True)
+    if not success:
+        print(f"❌ Compilation failed: {c_file_path}")
+        sys.exit(1)
+
+    match = compare_results(c_file_path, cma_path, verbose=True)
+    if not match:
+        print(f"❌ Mismatch: {c_file_path}")
+        sys.exit(1)
+
+    print("✅ Test passed.")
+
+    if os.path.exists(cma_path):
+        os.remove(cma_path)
