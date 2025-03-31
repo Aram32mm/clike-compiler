@@ -1,6 +1,74 @@
-ALLOC 1
-LOADC 7
+// Constants and Memory
+LOADC 5
+LOADA 100
+STOREA 100
+ALLOC 10
+FREE 10 // unknown
+
+// Arithmetic
+LOADC 10
+LOADC 20
+ADD
+LOADC 50
+LOADC 30
+SUB
+LOADC 3
+LOADC 4
+MUL
+LOADC 20
+LOADC 5
+DIV
+LOADC 17
+LOADC 5
+MOD
+LOADC -7
 NEG
-STOREA 0
-LOADA 0
-RETURN
+
+// Comparisons and Logic
+LOADC 5
+LOADC 5
+EQ
+LOADC 5
+LOADC 3
+NEQ
+LOADC 7
+LOADC 4
+GT    // unknown
+LOADC 3
+LOADC 7
+LT    // unknown
+LOADC 7
+LOADC 7
+GE
+LOADC 2
+LOADC 5
+LE
+LOADC 1
+LOADC 0
+AND
+LOADC 1
+LOADC 0
+OR
+LOADC 0
+NOT
+
+// Control Flow
+JUMP 42
+JUMPZ 50
+JUMPNZ 60    // unknown
+LABEL loop_start    // unknown
+
+
+// Functions and Stack Frames
+CALL 200   // unknown
+RET    // unknown
+ENTER 3
+LEAVE   // unknown
+
+// Miscellaneous
+LOADC 8
+DUP
+SWAP   // unknown
+POP
+NOP   // unknown
+HALT
