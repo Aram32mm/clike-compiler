@@ -50,7 +50,8 @@ class SemanticAnalyzer:
         kind = node[0]
         method = getattr(self, f"visit_{kind.lower()}", None)
         if method:
-            print("✅ Found method:", method.__name__)
+            if self.verbose:
+                print("✅ Found method:", method.__name__)
             return method(node)
         else:
             self.error(f"No handler for AST node '{kind}'")
@@ -236,7 +237,6 @@ class SemanticAnalyzer:
     def visit_variable(self, node):
         _, name = node
         info = self.symbols.lookup(name)
-        print(">>> with expr =", info)
         if not info:
             self.error(f"Use of undeclared variable '{name}'")
             return None
