@@ -1,6 +1,8 @@
 # C-like Compiler
 
 A compiler that translates a simplified C-like language to CMA (Code for Virtual Abstract Machine) for execution on the VAM interpreter.
+ 
+**👉 [Zur deutschen Version](README.de.md)**
 
 ## 🌟 Features
 
