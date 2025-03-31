@@ -60,7 +60,7 @@ class CParser:
         ('left', 'LT', 'LE', 'GT', 'GE'),
         ('left', 'PLUS', 'MINUS'),
         ('left', 'MUL', 'DIV', 'MOD'),
-        ('right', 'UMINUS'),
+        ('right', 'UMINUS', 'NOT'),
     )
 
     def p_program(self, p):
@@ -106,10 +106,15 @@ class CParser:
         if len(p) == 2:
             if p[1] is None:
                 p[0] = []
+            elif isinstance(p[1], list):
+                p[0] = p[1]  
             else:
                 p[0] = [p[1]]
         else:
-            p[0] = p[1] + [p[2]]
+            if isinstance(p[2], list):
+                p[0] = p[1] + p[2]
+            else:
+                p[0] = p[1] + [p[2]]
         if self.verbose:
             print("Reduced: statements →", p[0])
 
@@ -123,9 +128,14 @@ class CParser:
                      | continue_statement
                      | for_statement
                      | block_statement
+                     | expression SEMICOLON
                      | SEMICOLON'''
         if p.slice[1].type == 'SEMICOLON':
             p[0] = ('EMPTY',)
+        elif len(p) == 3 and p.slice[1].type not in ('TYPE',):  # expression SEMICOLON
+            p[0] = p[1]
+        elif isinstance(p[1], list):  # Multiple VAR_DECLs
+            p[0] = p[1]
         else:
             p[0] = p[1]
         if self.verbose:
@@ -144,13 +154,13 @@ class CParser:
             print("Reduced: for_statement →", p[0])
 
     def p_variable_declaration(self, p):
-        '''variable_declaration : TYPE IDENTIFIER SEMICOLON
+        '''variable_declaration : TYPE identifier_list SEMICOLON
                                  | TYPE MUL IDENTIFIER SEMICOLON
                                  | TYPE IDENTIFIER ASSIGN expression SEMICOLON
                                  | TYPE MUL IDENTIFIER ASSIGN expression SEMICOLON
                                  | TYPE IDENTIFIER LBRACKET INTEGER RBRACKET SEMICOLON'''
         if len(p) == 4:
-            p[0] = ('VAR_DECL', p[1], p[2])
+            p[0] = [('VAR_DECL', p[1], name) for name in p[2]]
         elif len(p) == 5 and p.slice[2].type == 'MUL':
             p[0] = ('VAR_DECL', p[1] + '*', p[3]) 
         elif len(p) == 6:
@@ -161,6 +171,14 @@ class CParser:
             p[0] = ('ARRAY_DECL', p[1], p[2], p[4])
         if self.verbose:
             print("Reduced: variable_declaration →", p[0])
+
+    def p_identifier_list(self, p):
+        '''identifier_list : IDENTIFIER
+                        | identifier_list COMMA IDENTIFIER'''
+        if len(p) == 2:
+            p[0] = [p[1]]
+        else:
+            p[0] = p[1] + [p[3]]
 
     def p_assignment_statement(self, p):
         'assignment_statement : IDENTIFIER ASSIGN expression SEMICOLON'
@@ -244,6 +262,7 @@ class CParser:
                       | IDENTIFIER LPAREN argument_list RPAREN
                       | LPAREN expression RPAREN
                       | MINUS expression %prec UMINUS
+                      | NOT expression %prec NOT
                       | IDENTIFIER
                       | INTEGER
                       | FLOAT
@@ -262,7 +281,10 @@ class CParser:
             else:
                 p[0] = ('VARIABLE', p[1])
         elif len(p) == 3:
-            p[0] = ('UNARYOP', '-', p[2])
+            if token_type == 'MINUS':
+                p[0] = ('UNARYOP', '-', p[2])
+            elif token_type == 'NOT':
+                p[0] = ('UNARYOP', '!', p[2])
         elif len(p) == 4 and p[1] == '(':
             p[0] = p[2]
         elif len(p) == 4 and p.slice[2].type == 'ASSIGN':
