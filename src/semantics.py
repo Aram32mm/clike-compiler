@@ -13,6 +13,7 @@ class SemanticAnalyzer:
         self.errors = []
         self.verbose = verbose
         self.current_function_return_type = None
+        self.loop_depth = 0
 
     # Two pass architecture for function declarations
     def analyze(self, ast):
@@ -44,9 +45,12 @@ class SemanticAnalyzer:
             print(f"❌ Semantic error: {message}")
 
     def visit(self, node):
+        if node is None:
+            return None
         kind = node[0]
         method = getattr(self, f"visit_{kind.lower()}", None)
         if method:
+            print("✅ Found method:", method.__name__)
             return method(node)
         else:
             self.error(f"No handler for AST node '{kind}'")
@@ -88,18 +92,22 @@ class SemanticAnalyzer:
         if name in self.symbols.scopes[-1]:  # Only check current scope
             self.error(f"Array '{name}' already declared")
         else:
-            self.symbols.declare(name, t, 'array')
-        self.visit(size_expr)
+            size_type = self.visit(size_expr)
+            if size_type != 'int':
+                self.error(f"Array size must be an integer, got '{size_type}'")
+            size_val = size_expr[1]  # assuming size_expr is ('INTEGER', N)
+            self.symbols.declare(name, t, 'array', extra={'size': size_val})
 
     def visit_assign(self, node):
         _, name, expr = node
         var_info = self.symbols.lookup(name)
         if not var_info:
             self.error(f"Assignment to undeclared variable '{name}'")
-            return
+            return None
         expr_type = self.visit(expr)
         if expr_type and expr_type != var_info.type:
             self.error(f"Type mismatch in assignment to '{name}': {var_info.type} = {expr_type}")
+        return expr_type
 
     def visit_return(self, node):
         _, expr = node
@@ -112,11 +120,13 @@ class SemanticAnalyzer:
             return
         elif self.current_function_return_type != 'void':
             self.error(f"Return type mismatch: expected {self.current_function_return_type}, got void")
+        return None
 
     def visit_if(self, node):
         _, cond, then = node
         self.visit(cond)
         self.visit(then)
+        return None
 
     def visit_if_else(self, node):
         _, cond, then, otherwise = node
@@ -127,7 +137,9 @@ class SemanticAnalyzer:
     def visit_while(self, node):
         _, cond, body = node
         self.visit(cond)
+        self.loop_depth += 1
         self.visit(body)
+        self.loop_depth -= 1
 
     def visit_for(self, node):
         _, init, cond, update, body = node
@@ -135,8 +147,18 @@ class SemanticAnalyzer:
         self.visit(init)
         self.visit(cond)
         self.visit(update)
+        self.loop_depth += 1
         self.visit(body)
+        self.loop_depth -= 1
         self.symbols.pop_scope()
+
+    def visit_break(self, node):
+        if self.loop_depth == 0:
+            self.error("BREAK used outside of loop")
+
+    def visit_continue(self, node):
+        if self.loop_depth == 0:
+            self.error("CONTINUE used outside of loop")
 
     def visit_block(self, node):
         _, stmts = node
@@ -150,20 +172,25 @@ class SemanticAnalyzer:
         info = self.symbols.lookup(func_name)
         if not info:
             self.error(f"Call to undeclared function '{func_name}'")
-            return
+            return None
         if info.kind == 'func':
             expected = info.extra.get('params', [])
             if len(expected) != len(args):
                 self.error(f"Function '{func_name}' called with wrong number of arguments: expected {len(expected)}, got {len(args)}")
-                return
+                return None
             for i, (expected_type, arg_expr) in enumerate(zip(expected, args)):
                 actual_type = self.visit(arg_expr)
                 if actual_type != expected_type:
                     self.error(f"Type mismatch in argument {i+1} of call to '{func_name}': expected {expected_type}, got {actual_type}")
+            return info.type
+        else:
+            self.error(f"'{func_name}' is not callable")
+            return None
 
     def visit_array_access(self, node):
         _, name, index_expr = node
         info = self.symbols.lookup(name)
+        print(">>> symbol lookup result:", info, type(info))
         if not info or info.kind != 'array':
             self.error(f"Access to undeclared or non-array variable '{name}'")
             return None
@@ -171,19 +198,28 @@ class SemanticAnalyzer:
         index_type = self.visit(index_expr)
         if index_type != 'int':
             self.error(f"Array index must be of type 'int', got '{index_type}'")
+    
         return info.type
 
     def visit_binop(self, node):
         _, op, left, right = node
         left_type = self.visit(left)
         right_type = self.visit(right)
+        if left_type is None or right_type is None:
+            return None
         if left_type != right_type:
             self.error(f"Type mismatch in binary operation '{op}': {left_type} vs {right_type}")
+            return None
         return left_type
 
     def visit_unaryop(self, node):
         _, op, expr = node
-        return self.visit(expr)
+        expr_type = self.visit(expr)
+        if op == '!' and expr_type != 'int':
+            self.error(f"Operator '!' expects 'int', got '{expr_type}'")
+        elif op == '-' and expr_type not in ['int', 'float']:
+            self.error(f"Unary '-' expects 'int' or 'float', got '{expr_type}'")
+        return expr_type
 
     def visit_integer(self, node):
         return 'int'
@@ -200,10 +236,11 @@ class SemanticAnalyzer:
     def visit_variable(self, node):
         _, name = node
         info = self.symbols.lookup(name)
+        print(">>> with expr =", info)
         if not info:
             self.error(f"Use of undeclared variable '{name}'")
             return None
         return info.type
 
     def visit_empty(self, node):
-        pass
+        return None
