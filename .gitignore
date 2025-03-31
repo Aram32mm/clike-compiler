@@ -45,5 +45,6 @@ output/
 
 # Misc
 .coverage
+clike-compiler.spec
 htmlcov/
 .pytest_cache/
